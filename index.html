@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>50th Parallel | Шпаргалка офіціанта</title>
+  <style>
+    :root {
+      --bg-color: #0b1120;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --tag-bg: #334155;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    p.subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 600px;
+      margin: 0 auto 20px;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .search-bar:focus {
+      border-color: var(--accent);
+    }
+
+    .category-filter {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .category-filter::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      border-color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      transition: transform 0.15s ease;
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      height: 200px;
+      background: #090d16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--card-border);
+      overflow: hidden;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .card-img-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+
+    .time-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-radius: 6px;
+      backdrop-filter: blur(4px);
+      z-index: 2;
+    }
+
+    .card-actions {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      display: flex;
+      gap: 6px;
+      z-index: 2;
+    }
+
+    .action-btn {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #475569;
+      color: #fff;
+      font-size: 0.7rem;
+      padding: 5px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+    .action-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .card-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .card-price {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .weight-tag {
+      background: var(--tag-bg);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .specs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid var(--card-border);
+      padding-top: 12px;
+      font-size: 0.85rem;
+    }
+
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .spec-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #38bdf8;
+    }
+
+    .spec-label.ask {
+      color: #f43f5e;
+    }
+
+    .spec-label.target {
+      color: #4ade80;
+    }
+
+    .spec-desc {
+      color: #cbd5e1;
+      line-height: 1.35;
+    }
+
+    .allergen-box {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 6px 8px;
+      border-radius: 6px;
+    }
+
+    .file-input {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>50th Parallel | База Знань</h1>
+    <p class="subtitle">Тренувальна техкарта для офіціантів</p>
+  </header>
+
+  <div class="controls">
+    <input type="text" id="search" class="search-bar" placeholder="🔍 Пошук страви або інгредієнта...">
+    <div class="category-filter" id="catFilter">
+      <button class="cat-btn active" data-cat="all">Всі страви</button>
+      <button class="cat-btn" data-cat="breakfast">Легкий старт (10:00-12:00)</button>
+      <button class="cat-btn" data-cat="snack">Перекуси</button>
+      <button class="cat-btn" data-cat="salad">Салати</button>
+      <button class="cat-btn" data-cat="soup">Супи</button>
+      <button class="cat-btn" data-cat="main">Основне</button>
+    </div>
+  </div>
+
+  <main class="grid" id="menuGrid"></main>
+
+  <script>
+    const menuData = [
+      /* СНІДАНКИ */
+      {
+        id: "b1",
+        category: "breakfast",
+        title: "Сирники Фруті з соусом Манго",
+        weight: "310г",
+        price: "184 грн",
+        timeBadge: "10:00 - 12:00",
+        img: "",
+        inside: "Ніжні домашні сирники, сезонні фрукти/ягоди, солодкий манговий соус з кислинкою.",
+        target: "Шанувальникам солодких сніданків, дівчатам під каву, дітям.",
+        ask: "«До сніданку йде кава або сік у подарунок — що вам приготувати?», «Подати соус окремо чи полити одразу?»",
+        allergens: "Творог (лактоза), яйця, глютен (борошно)."
+      },
+      {
+        id: "b2",
+        category: "breakfast",
+        title: "Омлетний млинець з кабачками та креветками",
+        weight: "225г",
+        price: "214 грн",
+        timeBadge: "10:00 - 12:00",
+        img: "",
+        inside: "Тонкий яєчний омлет у формі млинця. Начинка: обсмажені соковиті кабачки та тигрові креветки.",
+        target: "Гостям, які хочуть легкий, білковий сніданок без важкого м'яса.",
+        ask: "«Оберіть напій до сніданку: каву чи сік? Чи немає алергії на морепродукти?»",
+        allergens: "Креветки (морепродукти), яйця, вершкове масло."
+      },
+      {
+        id: "b3",
+        category: "breakfast",
+        title: "Сніданок Англійський",
+        weight: "175г",
+        price: "178 грн",
+        timeBadge: "10:00 - 12:00",
+        img: "",
+        inside: "Яйце глазунья, підсмажена мисливська ковбаска, квасоля в томатному соусі, тост.",
+        target: "Швидкий ситний солоний сніданок.",
+        ask: "«У нас є варіант XXL (310г) удвічі більший за порцією — бажаєте XXL? Кава чи сік?»",
+        allergens: "Яйця, свинина/м'ясо в ковбасці, глютен."
+      },
+      {
+        id: "b4",
+        category: "breakfast",
+        title: "Сніданок Англійський XXL",
+        weight: "310г",
+        price: "224 грн",
+        timeBadge: "10:00 - 12:00",
+        img: "",
+        inside: "Подвійна порція: 2 яйця, подвійні ковбаски/сосиски, більше квасолі, тости.",
+        target: "Голодним гостям, чоловікам для максимальної ситності.",
+        ask: "«Ступінь підсмажування яєць? Кава чи сік у подарунок?»",
+        allergens: "Яйця, сосиски/ковбаски, глютен."
+      },
+      {
+        id: "b5",
+        category: "breakfast",
+        title: "Скрембл з лососем та салатом",
+        weight: "350г",
+        price: "224 грн",
+        timeBadge: "10:00 - 12:00",
+        img: "",
+        inside: "Кремовий яєчний скрембл, слабосолений лосось, свіжий мікс зелені під заправкою, тост.",
+        target: "Любителям корисної класики (омега-3, білок, клітковина).",
+        ask: "«Кава або сік на вибір? Бажаєте додати яйце пашот?»",
+        allergens: "Слабосолена риба (лосось), яйця, вершки/молочка, глютен."
+      },
+      {
+        id: "b6",
+        category: "breakfast",
+        title: "Яйце Пашот",
+        weight: "160г",
+        price: "59 грн",
+        timeBadge: "Додаток",
+        img: "",
+        inside: "Зварене без шкаралупи яйце з рідким жовтком у центрі.",
+        target: "Як доповнення до будь-якого тосту або страви.",
+        ask: "«Бажаєте додати яйце пашот до вашої страви?»",
+        allergens: "Яйця."
+      },
+
+      /* ПЕРЕКУСИ */
+      {
+        id: "sn1",
+        category: "snack",
+        title: "Тако-Деруни Цезар",
+        weight: "270г",
+        price: "174 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Картопляні хрусткі деруни замість тортильї, курка сувід, листя салату, чері, соус Цезар.",
+        target: "Шанувальникам дерунів у формі стрітфуду.",
+        ask: "«Соус цезар містить часник — підходить вам?»",
+        allergens: "Глютен, молочка, часник."
+      },
+      {
+        id: "sn2",
+        category: "snack",
+        title: "Тако-Деруни BBQ",
+        weight: "260г",
+        price: "194 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Хрусткі картопляні деруни, соковите м'ясо з димним соусом BBQ.",
+        target: "Поціновувачам м'ясних перекусів з димком.",
+        ask: "«Бажаєте додати картоплю фрі чи напій?»",
+        allergens: "Глютен, соус BBQ."
+      },
+      {
+        id: "sn3",
+        category: "snack",
+        title: "Тако-Деруни Креветка",
+        weight: "250г",
+        price: "244 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Картопляні деруни, соковиті смажені креветки, фірмовий соус, зелень.",
+        target: "Легкий рибний перекус без важкого м'яса.",
+        ask: "«Чи немає алергії на креветки?»",
+        allergens: "Креветки, глютен."
+      },
+      {
+        id: "sn4",
+        category: "snack",
+        title: "Боул Мікс Ха",
+        weight: "240г",
+        price: "284 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Збалансована чаша: свіжі овочі, мікс зелені, білкова основа, авторська заправка.",
+        target: "Прихильникам правильного харчування та ЗОЖ.",
+        ask: "«Заправку змішати одразу чи подати окремо в соуснику?»",
+        allergens: "Уточнити по ТТК на кухні."
+      },
+      {
+        id: "sn5",
+        category: "snack",
+        title: "Мелт Чікен Цезар",
+        weight: "325г",
+        price: "164 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Закритий гарячий сендвіч: курка, тягучий плавлений сир, соус цезар у хрусткому хлібі.",
+        target: "Швидко і ситно перекусити під чай або каву.",
+        ask: "«Вам на місці чи з собою?»",
+        allergens: "Глютен, лактоза, часник."
+      },
+      {
+        id: "sn6",
+        category: "snack",
+        title: "Мелт Лосось Спайсі",
+        weight: "300г",
+        price: "194 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Гарячий тост із слабосоленим лососем, розплавленим сиром та гоструватим спайсі-соусом.",
+        target: "Любителям риби з приємною пікантною гостротою.",
+        ask: "«Соус має гостринку — чи комфортна вам така пікантність?»",
+        allergens: "Риба, глютен, лактоза, гострий перець."
+      },
+
+      /* САЛАТИ */
+      {
+        id: "sal1",
+        category: "salad",
+        title: "Греко Класік",
+        weight: "240г",
+        price: "154 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Свіжі томати, хрусткий огірок, сир Фета, солодкий перець, кримська цибуля, мікс листя салату, маслини під грецьким соусом.",
+        target: "Легкий овочевий старт перед гарячим, вегетаріанцям.",
+        ask: "«Цибулю залишаємо чи краще без неї?»",
+        allergens: "Лактоза (Фета)."
+      },
+      {
+        id: "sal2",
+        category: "salad",
+        title: "Чікка",
+        weight: "280г",
+        price: "188 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Обсмажене стегно курча, солоний огірок, свіжий томат, кінза, солодка цибуля, салат Айсберг, вершково-часниковий та томатно-яблучний соуси.",
+        target: "Хто хоче незвичний соковитий смак курки з пікантним огірком.",
+        ask: "«Тут є кінза та часник — ви вживаєте кінзу?»",
+        allergens: "Кінза, часник, лактоза."
+      },
+      {
+        id: "sal3",
+        category: "salad",
+        title: "Цезар Класік",
+        weight: "250г",
+        price: "298 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Куряче філе Sous-vide з беконом, перепелині яйця, томати чері, мікс салату, сир Грана Падано, крутони, соус Цезар.",
+        target: "Тим, хто обирає перевірену смачну класику.",
+        ask: "«Бажаєте класичний з куркою чи з тигровими креветками?»",
+        allergens: "Глютен, яйця, лактоза, соус Цезар."
+      },
+      {
+        id: "sal4",
+        category: "salad",
+        title: "Цезар з креветкою",
+        weight: "250г",
+        price: "348 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Обсмажені креветки гриль, перепелині яйця, чері, мікс салату, Грана Падано, крутони, соус Цезар.",
+        target: "Поціновувачам морських вишуканих салатів.",
+        ask: "«Чи немає алергії на морепродукти?»",
+        allergens: "Креветки, глютен, яйця, лактоза."
+      },
+      {
+        id: "sal5",
+        category: "salad",
+        title: "Теплий з телятиною",
+        weight: "250г",
+        price: "298 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Обсмажена телятина, печериці, солодкий перець, спаржевий горошок, мікс салату, стручкова квасоля під французьким соусом.",
+        target: "Ситний гарячий м'ясний салат з овочами.",
+        ask: "«Ступінь просмаження м'яса влаштовує Medium чи сильніше просмажити?»",
+        allergens: "Гірчиця у французькому соусі."
+      },
+      {
+        id: "sal6",
+        category: "salad",
+        title: "Зі слайсами стейка Рібай",
+        weight: "280г",
+        price: "324 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Слайси стейка Рібай, солодкий перець, томати чері, солодка цибуля, ніжні баклажани, мікс салату, соус Песто.",
+        target: "Для любителів якісного яловичого стейка та песто.",
+        ask: "«Чи підходить соус песто (містить базилік та горіхи)?»",
+        allergens: "Горіхи, базилік, цибуля."
+      },
+      {
+        id: "sal7",
+        category: "salad",
+        title: "Фруті ді Маре",
+        weight: "240г",
+        price: "348 грн",
+        timeBadge: "",
+        img: "",
+        inside: "Креветки гриль, кальмар, м'ясо мідій, томати чері, сезонні ягоди, мікс салату, рукола, ягідний соус та соус Базилік.",
+        target: "Екзотичний мікс морепродуктів та ягідної кислинки.",
+        ask: "«Страва поєднує морепродукти та ягідні нотки — вам смакує такий профіль?»",
+        allergens: "Морепродукти (кальмари, мідії, креветки)."
+      }
+    ];
+
+    // Завантажуємо збережені користувачем фото з пам'яті браузера
+    const savedImages = JSON.parse(localStorage.getItem('menu_custom_images') || '{}');
+    menuData.forEach(item => {
+      if (savedImages[item.id]) {
+        item.img = savedImages[item.id];
+      }
+    });
+
+    const grid = document.getElementById("menuGrid");
+    const searchInput = document.getElementById("search");
+    const catButtons = document.querySelectorAll(".cat-btn");
+
+    function renderCards(data) {
+      grid.innerHTML = "";
+      if (data.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">Нічого не знайдено 🤷‍♂️</div>`;
+        return;
+      }
+
+      data.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="card-img-wrapper" id="imgBox-${item.id}">
+            ${item.img ? `<img src="${item.img}" class="card-img" alt="${item.title}">` : `
+              <div class="card-img-placeholder">
+                <span style="font-size: 2.2rem;">🍳</span>
+                <span>Немає зображення</span>
+              </div>
+            `}
+            ${item.timeBadge ? `<span class="time-badge">${item.timeBadge}</span>` : ""}
+            
+            <div class="card-actions">
+              <button class="action-btn" onclick="setUrlImage('${item.id}')">🔗 Вставити URL</button>
+              <label class="action-btn">
+                📷 Файл
+                <input type="file" accept="image/*" class="file-input" onchange="uploadImage(event, '${item.id}')">
+              </label>
+            </div>
+          </div>
+          
+          <div class="card-content">
+            <div class="card-header">
+              <h3 class="card-title">${item.title}</h3>
+              <span class="card-price">${item.price}</span>
+            </div>
+            
+            <div class="card-meta">
+              <span class="weight-tag">⚖️ ${item.weight}</span>
+            </div>
+
+            <div class="specs">
+              <div class="spec-item">
+                <span class="spec-label">🥘 Що всередині:</span>
+                <span class="spec-desc">${item.inside}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label target">🎯 Кому пропонувати:</span>
+                <span class="spec-desc">${item.target}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label ask">💬 Що спитати / уточнити:</span>
+                <span class="spec-desc">${item.ask}</span>
+              </div>
+              ${item.allergens ? `
+                <div class="allergen-box">
+                  <strong>⚠️ Алергени:</strong> ${item.allergens}
+                </div>
+              ` : ""}
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    renderCards(menuData);
+
+    // Фільтрація
+    catButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        catButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        filterMenu();
+      });
+    });
+
+    searchInput.addEventListener("input", filterMenu);
+
+    function filterMenu() {
+      const query = searchInput.value.toLowerCase().trim();
+      const activeCat = document.querySelector(".cat-btn.active").dataset.cat;
+
+      const filtered = menuData.filter(item => {
+        const matchesCat = activeCat === "all" || item.category === activeCat;
+        const matchesQuery = item.title.toLowerCase().includes(query) ||
+                             item.inside.toLowerCase().includes(query) ||
+                             item.target.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+
+      renderCards(filtered);
+    }
+
+    // Вставка URL по кліку на кнопку
+    window.setUrlImage = function(id) {
+      const url = prompt("Вставте пряме посилання на картинку з сайту ChoiceQR:");
+      if (url && url.trim().length > 0) {
+        saveItemImage(id, url.trim());
+      }
+    };
+
+    // Завантаження файлу
+    window.uploadImage = function(event, id) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          saveItemImage(id, e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    function saveItemImage(id, imgSrc) {
+      const item = menuData.find(i => i.id === id);
+      if (item) {
+        item.img = imgSrc;
+        savedImages[id] = imgSrc;
+        try {
+          localStorage.setItem('menu_custom_images', JSON.stringify(savedImages));
+        } catch(e) {
+          console.warn("Storage quota exceeded");
+        }
+        
+        const imgBox = document.getElementById(`imgBox-${id}`);
+        imgBox.querySelector(".card-img-placeholder")?.remove();
+        let currentImg = imgBox.querySelector(".card-img");
+        if (!currentImg) {
+          currentImg = document.createElement("img");
+          currentImg.className = "card-img";
+          imgBox.prepend(currentImg);
+        }
+        currentImg.src = imgSrc;
+      }
+    }
+  </script>
+</body>
+</html>
